@@ -1,4 +1,4 @@
-include config.mk
+include swat.mk
 
 all: $(target)
 
@@ -22,7 +22,7 @@ endef
 
 define link
 	@t=$$(date +%s%N); \
-	printf "$(MAGENTA)%-7s$(RESET) $(BOLD)%-35s$(RESET)" \
+	printf "$(ORANGE)%-7s$(RESET) $(BOLD)%-51s$(RESET)" \
 		"LINK" "$@"; \
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^; \
 	rc=$$?; \
