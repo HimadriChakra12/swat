@@ -25,6 +25,9 @@ clean:
 install: $(target)
 	cp -f $(target) $(APP)
 
-.PHONY: all clean install
+uninstall:
+	rm -f $(APP)/$(target)
+
+.PHONY: all clean install uninstall
 
 include $(deps)
