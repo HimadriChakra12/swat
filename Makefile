@@ -11,13 +11,21 @@ BLUE    = \033[1;34m
 RESET = \033[0m
 
 define compile_c
-	@t=$$(date +%s%N); \
-	printf "$(GREEN)%-7s$(RESET) $(BOLD)%-25s$(RESET) %-25s" \
-		"$(CC)" "$<" "$@"; \
-	$(CC) $(1) -c $< -o $@; \
-	rc=$$?; \
-	ms=$$((($$(date +%s%N)-t)/1000000)); \
-	[ $$rc -eq 0 ] && printf " $(CYAN)%5dms$(RESET)\n" $$ms || exit $$rc
+	@t0=$$(date +%s%N); \
+	out=$$($(CC) $(1) -c $< -o $@ 2>&1); rc=$$?; \
+	t1=$$(date +%s%N); ms=$$(( (t1 - t0) / 1000000 )); \
+	( \
+		flock -w 10 200; \
+		if [ $$rc -eq 0 ]; then \
+			printf "$(GREEN)%-7s$(RESET) $(BOLD)%-25s$(RESET) %-25s $(CYAN)%5dms$(RESET)\n" \
+				"$(CC)" "$<" "$@" "$$ms"; \
+		else \
+			printf "$(GREEN)%-7s$(RESET) $(BOLD)%-25s$(RESET) FAILED $(CYAN)%5dms$(RESET)\n" \
+				"$(CC)" "$<" "$$ms"; \
+			printf "%s\n" "$$out"; \
+		fi \
+	) 200>/tmp/.swat-build.lock; \
+	exit $$rc
 endef
 
 define link
@@ -45,6 +53,17 @@ $(obj_dir)/%.o: %.c
 	@mkdir -p $(@D)
 	$(call compile_c,$(CFLAGS))
 
+bench:
+	@t=$$(date +%s%N); \
+	$(MAKE) --no-print-directory $(target); \
+	rc=$$?; \
+	ms=$$(( ($$(date +%s%N) - t) / 1000000 )); \
+	if [ $$rc -eq 0 ]; then \
+		printf "\n$(BOLD)Build finished in$(RESET) $(CYAN)%dms$(RESET)\n" $$ms; \
+	else \
+		exit $$rc; \
+	fi
+
 clean:
 	rm -rf $(dep_dir)/*
 	rm -rf $(obj_dir)/*
@@ -56,6 +75,6 @@ install: $(target)
 uninstall:
 	rm -f $(APP)/$(target)
 
-.PHONY: all clean install uninstall
+.PHONY: all bench clean install uninstall
 
 include $(deps)
