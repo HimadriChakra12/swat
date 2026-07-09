@@ -41,6 +41,7 @@ endef
 $(target): $(objs)
 	@mkdir -p $(@D)
 	$(call link)
+	strip --strip-unneeded $@
 
 $(dep_dir)/%.d: %.c
 	@mkdir -p $(@D); \
