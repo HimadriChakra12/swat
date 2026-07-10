@@ -48,7 +48,8 @@ static void wipe_pencil_edit_texture(void) {
 }
 
 static uint8_t tools_tool_pencil_handle_activate(void) {
-    SDL_ShowCursor(SDL_DISABLE);
+    SDL_Cursor *cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_CROSSHAIR);
+    SDL_SetCursor(cursor);
     pencil_mode = PENCIL_MODE_DRAW;
 
     // lazy initialize internal pencil_edit_texture

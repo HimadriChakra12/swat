@@ -43,13 +43,15 @@ static void paste_clipboard(input_util_t* iu) {
 }
 
 static uint8_t rect_handle_activate(void) {
-    SDL_ShowCursor(SDL_ENABLE);
+    SDL_Cursor *cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
+    SDL_SetCursor(cursor);
     rect_mode = RECT_MODE_DRAW;
     dragging  = 0;
     return 1;
 }
 
 static uint8_t rect_handle_deactivate(void) {
+    SDL_ShowCursor(SDL_ENABLE);
     dragging  = 0;
     rect_mode = RECT_MODE_DRAW;
     return 1;

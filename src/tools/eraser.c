@@ -16,7 +16,8 @@ static void wipe_eraser_edit_texture(void) {
 }
 
 static uint8_t tools_tool_eraser_handle_activate(void) {
-    SDL_ShowCursor(SDL_DISABLE);
+    SDL_Cursor *cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+    SDL_SetCursor(cursor);
 
     // lazyily initialize our edit texture
     if (eraser_edit_texture == NULL) {

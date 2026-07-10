@@ -52,7 +52,8 @@ static input_util_t marker_input_util;
 
 
 static uint8_t marker_handle_activate(void) {
-    SDL_ShowCursor(SDL_DISABLE);
+    SDL_Cursor *cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_CROSSHAIR);
+    SDL_SetCursor(cursor);
     return 1;
 }
 
